@@ -42,3 +42,34 @@ grpc_tools_node_protoc \
 ```
 This generates the Flight_grpc_web client file and the regular protobuf to js compilation.<br>
 Done.
+
+## WebAssembly notes
+```bash
+# Compile the wasm code
+cd wasm/go
+GOOS=js GOARCH=wasm go build -o main.wasm
+rm ../../public/main.wasm
+mv main.wasm ../../public
+```
+Then serve....
+
+### 1. Optimization using TinyGo
+
+```bash
+# macos 
+brew tap tinygo-org/tools
+brew install tinygo
+```
+
+compile our wasm code:
+````bash
+GOOS=js GOARCH=wasm tinygo build -o wasm.wasm ./main.go
+# Or like so:
+tinygo build -o public/main.wasm -target wasm -opt z .
+````
+
+# Start
+```bash
+npm build
+npm start
+```
