@@ -1,4 +1,3 @@
-// src/ts/ipc-decoder.ts
 import { tableFromIPC, type Table } from "apache-arrow";
 import { frameMessageMeta, pad8, concatChunks } from "./IpcFraming";
 
@@ -8,7 +7,7 @@ import { frameMessageMeta, pad8, concatChunks } from "./IpcFraming";
  * - Body: raw bytes + padded to 8 bytes (NO framing!)
  */
 export class IPCCollector {
-    private parts: Uint8Array[] = [];
+    public parts: Uint8Array[] = [];
 
     add(header?: Uint8Array, body?: Uint8Array) {
         if (header && header.byteLength) {

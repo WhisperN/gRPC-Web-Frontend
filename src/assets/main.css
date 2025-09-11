@@ -1,0 +1,11 @@
+.spinning-globe {
+    width: 100%;
+    height: auto;
+    position: relative;
+    background: #111;
+}
+
+.navbar {
+    width: auto;
+    height: 50px;
+}

@@ -20,11 +20,12 @@ type Inputs = {
     lat: Float64Array;          // Breitengrad [deg]
 };
 
-export function startGlobeScatter({container, lon, lat}: Inputs) {
+export function startGlobeScatter({container, lat, lon}: Inputs) {
     // 1) Zero-copy Datenadapter
-    const N = Math.min(lon.length, lat.length);
+    // assume both arrays have the samte length...
+
     const data = {
-        length: N,
+        length: lat.length,
         getPosition: (_: unknown, {index}: {index: number}) => {
             return [lon[index], lat[index]] as [number, number];
         }

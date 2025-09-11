@@ -1,8 +1,8 @@
 // CommonJS: Webpack kann diese requires statisch analysieren
-import { SharedArrayRingBuffer, createRing, ringWrite } from '@/ts/SharedArrayRingBuffer';
+import {SharedArrayRingBuffer, createRing, dumpChunksToSAB, loadChunksFromSAB} from '@/ts/SharedArrayRingBuffer';
 const { Criteria, Ticket,  } = require("@/gen/flight_pb");
 const { FlightServicePromiseClient } = require("@/gen/flight_grpc_web_pb");
-import { type Schema, type Field } from "apache-arrow";
+import {type Schema, type Field, tableFromIPC} from "apache-arrow";
 import { IPCCollector } from "@/ts/IpcDecoder";
 import {startGlobeScatter} from "@/ts/GlobeScatter";
 
@@ -13,9 +13,11 @@ export interface arrowClient {
     sarb: SharedArrayRingBuffer;
 }
 
-// initiation function
+/**
+ * start the flight client to receive messages
+ */
 export async function startFlightClient(): Promise<arrowClient> {
-    const ticketBytes = new TextEncoder().encode("sPlot");
+    const ticketBytes = new TextEncoder().encode("sPlotPositions");
     const ticket = new Ticket();
     ticket.setTicket(ticketBytes);
 
@@ -27,65 +29,81 @@ export async function startFlightClient(): Promise<arrowClient> {
     }
 }
 
-// Pick a ticket from the list of flights
+/**
+ * lists the implemented flights that the server has available
+ * @param ac
+ */
 export async function getListFlights(ac: arrowClient) {
     let stream = ac.clientService.listFlights(ac.criteria);
     // ... implement ticketing system later.
 }
 
-export async function doGet(ac: arrowClient) {
-    const stream = ac.clientService.doGet(ac.ticket, {});
-    const collector = new IPCCollector();
+/**
+ * doGet using Typescript as the processing pipeline
+ * @param ac
+ */
+export async function doGet(ac: arrowClient): Promise<SharedArrayRingBuffer> {
+    return new Promise<SharedArrayRingBuffer>((resolve, reject) => {
+        const stream = ac.clientService.doGet(ac.ticket, {});
+        const collector = new IPCCollector();
 
-    stream.on('data', (msg:any) => {
-        const header = msg.getDataHeader_asU8?.() as Uint8Array | undefined;
-        const body   = msg.getDataBody_asU8?.()   as Uint8Array | undefined;
+        stream.on('data', (msg:any) => {
+            const header = msg.getDataHeader_asU8?.() as Uint8Array | undefined;
+            const body   = msg.getDataBody_asU8?.()   as Uint8Array | undefined;
 
-        // Reassemble IPC correctly: frame *header*, append *raw* body (+pad)
-        collector.add(header, body);
+            // Reassemble IPC correctly: frame *header*, append *raw* body (+pad)
+            collector.add(header, body);
+        });
 
-        // optional: dein Ringbuffer bleibt wie gehabt
-        if (body?.byteLength && !ringWrite(ac.sarb, body)) {
-            queueMicrotask(() => {
-                if (!ringWrite(ac.sarb, body)) {
-                    console.warn('SARB is full; dropping or implement a wait/retry strategy.')
-                }
-            });
-        }
+        stream.on('end', () => {
+            // save dataset to SAB
+            if (!dumpChunksToSAB(ac.sarb, collector.parts)) console.warn("Failed to save the collector to memory.");
+            resolve(ac.sarb);
+        });
+
+        stream.on('error', (err: any) => {
+            console.error('DoGet stream error: ', err)
+            reject(err);
+        });
     });
+}
 
-    stream.on('end', () => {
-        try {
-            const table = collector.toTable();
+/**
+ */
+export function startPlot(sb: SharedArrayRingBuffer) {
+    const host = document.getElementById('spinningGlobe') as HTMLDivElement;
+    const parts: Uint8Array[] = loadChunksFromSAB(sb);
 
-            // Felder typisiert lesen (TS7006 vermeiden)
-            const fields = (table.schema as Schema).fields as unknown as Field[];
-            console.log('schema fields:', fields.map((f: Field) => f.name));
+    // Contract all IPC-Parts to one stream
+    const total = parts.reduce((n, p) => n+p.byteLength, 0);
+    const joined = new Uint8Array(total);
+    let off = 0;
+    for (const p of parts) { joined.set(p, off); off += p.byteLength; }
 
-            const lonField = fields.findIndex((f: Field) => /^(lon|longitude|x)$/i.test(f.name));
-            const latField = fields.findIndex((f: Field) => /^(lat|latitude|y)$/i.test(f.name));
+    let table;
+    try {
+        table = tableFromIPC(joined);
+    } catch (e) {
+        console.error('Failed to parse IPC / render globe:', e);
+        return;
+    }
 
-            if (lonField < 0 || latField < 0) {
-                console.warn('Could not auto-detect lon/lat columns. Schema fields:', fields.map((f: Field) => f.name));
-                return;
-            }
+    // now the regular processing as we know it
+    // Felder typisiert lesen (TS7006 vermeiden)
+    const fields = (table.schema as Schema).fields as unknown as Field[];
 
-            const lon = table.getChildAt(lonField)!.toArray() as Float64Array;
-            const lat = table.getChildAt(latField)!.toArray() as Float64Array;
+    // Here we allow a couple of variable with its deviations... We could clean up regex here...
+    // TODO: Clean regex
+    const lonField = fields.findIndex((f: Field) => /^(lon|longitude|x)$/i.test(f.name));
+    const latField = fields.findIndex((f: Field) => /^(lat|latitude|y)$/i.test(f.name));
 
-            const host = document.createElement('div') as HTMLDivElement;
-            host.style.cssText = 'width:100%;height:720px;position:relative;background:#111';
-            document.getElementById('root')!.appendChild(host);
+    if (lonField < 0 || latField < 0) {
+        console.warn('Could not auto-detect lon/lat columns. Schema fields:', fields.map((f: Field) => f.name));
+        return;
+    }
 
-            startGlobeScatter({ container: host, lon, lat });
-        } catch (e) {
-            console.error('Failed to parse IPC / render globe:', e);
-        } finally {
-            console.log("Stream has ended");
-        }
-    });
+    const lon = table.getChildAt(lonField)!.toArray() as Float64Array;
+    const lat = table.getChildAt(latField)!.toArray() as Float64Array;
 
-    stream.on('error', (err: any) => {
-        console.error('DoGet stream error: ', err)
-    });
+    startGlobeScatter({ container: host, lat: lat, lon: lon });
 }
