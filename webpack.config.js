@@ -19,7 +19,7 @@ module.exports = (env, argv) => {
         },
         devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
         resolve: {
-            extensions: ['.ts', '.tsx', '.js'],
+            extensions: ['.ts', '.tsx', '.js', '.d.ts'],
             alias: {
                 "@": path.resolve(__dirname, "src"),
             },
@@ -34,6 +34,10 @@ module.exports = (env, argv) => {
                     use: [{ loader: 'ts-loader', options: { transpileOnly: true } }],
                     exclude: /node_modules/,
                 },
+                {
+                    test: /\.css$/i,
+                    use: ['style-loader', 'css-loader'], // <- wichtig
+                },
                 // optional: wenn du Source Maps aus Abhängigkeiten willst
                 { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
                 // optional: CSS/Assets
@@ -43,11 +47,8 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new HtmlWebpackPlugin({
-                templateContent: `
-          <!doctype html>
-          <html><head><meta charset="utf-8"/></head>
-          <body><div id="root"></div></body></html>
-        `,
+                template: path.resolve(__dirname, 'src', 'index.html'),
+                inject: 'body'
             }),
             // macht global Buffer verfügbar, wenn Libs das erwarten
             new webpack.ProvidePlugin({
@@ -66,10 +67,6 @@ module.exports = (env, argv) => {
             client: {
                 overlay: { errors: true, warnings: false },
                 logging: 'info',
-            },
-            headers: {
-                'Cross-Origin-Opener-Policy': 'same-origin',
-                'Cross-Origin-Embedder-Policy': 'require-corp',
             },
             // Falls du gRPC-Web / Envoy lokal nutzt: hier Proxy einhängen
             // proxy: {

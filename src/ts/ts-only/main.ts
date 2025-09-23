@@ -1,10 +1,10 @@
 // CommonJS: Webpack kann diese requires statisch analysieren
-import {SharedArrayRingBuffer, createRing, dumpChunksToSAB, loadChunksFromSAB} from '@/ts/SharedArrayRingBuffer';
-const { Criteria, Ticket,  } = require("@/gen/flight_pb");
-const { FlightServicePromiseClient } = require("@/gen/flight_grpc_web_pb");
+import {SharedArrayRingBuffer, createRing, dumpChunksToSAB, loadChunksFromSAB} from '@/ts/ts-only/SharedArrayRingBuffer';
+import {Criteria, FlightData, Ticket} from "@/gen/Flight_pb";
+import {FlightServiceClient} from "@/gen/FlightServiceClientPb";
 import {type Schema, type Field, tableFromIPC} from "apache-arrow";
-import { IPCCollector } from "@/ts/IpcDecoder";
-import {startGlobeScatter} from "@/ts/GlobeScatter";
+import { IPCCollector } from "@/ts/ts-only/IpcDecoder";
+import {startGlobeScatter} from "@/ts/ts-wasm/GlobeScatter";
 
 export interface arrowClient {
     clientService: any;
@@ -22,7 +22,7 @@ export async function startFlightClient(): Promise<arrowClient> {
     ticket.setTicket(ticketBytes);
 
     return {
-        clientService: new FlightServicePromiseClient('https://localhost:9090', null, null),
+        clientService: new FlightServiceClient('https://localhost:9090', null, null),
         criteria: new Criteria(),
         ticket: ticket,
         sarb: createRing(),

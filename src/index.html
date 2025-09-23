@@ -1,18 +1,35 @@
 <!DOCTYPE html>
 <html>
+<script src="style/animate.ts" type="typescript"></script>
 <head>
     <meta charset="UTF-8">
-    <title>Go WASM Test</title>
+    <title>GRPC Performance frontend</title>
 </head>
 <body>
-<!--TODO-->
-    <nav class="navbar">
-        <a>3D Plot</a>
-        <a>2D Plot</a>
-        <a>WASM</a>
-        <s>WASM + WebGPU</s>
-    </nav>
-<!--End TODO-->
+<nav class="navbar navbar-menu flex-horizontal">
+    <div class="nav-links">
+        <a class="pl-20" href="/public">Native</a>
+        <a class="pl-20" href="/wasm">Wasm</a>
+        <div class="dropdown pl-20">
+            <a class="wasm-webgl"
+            >Wasm+WebGL
+                <a id="wasm-webgl-up" style="font-size: small; position: absolute;">&#9660;</a>
+                <a id="wasm-webgl-down" style="font-size: small; position: absolute;">&#9650;</a>
+            </a>
+            <div class="wasm-webgl-menu flex-vertical">
+                <a class="navbar-dropdown-element">2D</a>
+                <a class="navbar-dropdown-element">3D</a>
+                <a class="navbar-dropdown-element">Compute shaders</a>
+            </div>
+        </div>
+    </div>
+    <div class="pr-20 navbar-collapse" onclick="expandMenu('navbar')">
+        <a id="navbar-up" hidden>&#9650;</a>
+        <a id="navbar-down">&#9660;</a>
+    </div>
+</nav>
+<section class="height-100 width-100">
     <div id="spinningGlobe" class="spinning-globe"></div>
+</section>
 </body>
 </html>

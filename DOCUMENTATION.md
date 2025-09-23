@@ -51,3 +51,23 @@ grpc_tools_node_protoc \
 ```
 This generates the Flight_grpc_web client file and the regular protobuf to js compilation.<br>
 Done.
+
+This code generated the Proto files
+```bash
+protoc \
+  -I ./proto ./proto/Flight.proto \
+  --js_out=import_style=commonjs,binary:./src/gen \
+  --grpc-web_out=import_style=typescript,mode=grpcweb:./src/gen
+```
+
+# Approach 1: TypeScript Only parsing
+problem: very, very slow
+(30s to 60s)
+
+# Approach 2: Wasm supported parsing
+Is still extremely slow
+(20s+)
+
+# Approach 3: Direct import of parquet/arrow
+Extremely efficient and loads in seconds!
+
