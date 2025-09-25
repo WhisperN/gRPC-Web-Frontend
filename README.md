@@ -54,6 +54,7 @@ mv main.wasm ../../public
 Then serve....
 
 ### 1. Optimization using TinyGo
+_Not in use in this project_
 
 ```bash
 # macos 

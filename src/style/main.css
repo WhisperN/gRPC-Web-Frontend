@@ -1,3 +1,8 @@
+:root {
+    --nav-bar-color: #ea58a1;
+    --nav-border-color: #111111;
+}
+
 * {
     margin: 0;
 }
@@ -11,15 +16,19 @@ a {
     color: inherit;
 }
 
+section {
+    max-width: 100vw;
+}
+
 .spinning-globe {
     height: 100%;
-    width: 100%;
-    position: absolute;
+    flex: 1 1 auto;
+    position: relative;
     background: #111;
 }
 
 .navbar {
-    background: salmon;
+    background: var(--nav-bar-color);
     width: 100%;
     height: auto;
     padding-bottom: 20px;
@@ -35,12 +44,12 @@ a {
     position: absolute;
     height: 150px;
     width: 100%;
-    background: salmon;
+    background: var(--nav-bar-color);
     padding-top: 10px;
 }
 
 .navbar-dropdown-element {
-    border-top: #111111 1px solid;
+    border-top: var(--nav-border-color) 1px solid;
     padding: 10px;
     text-align: center;
 }
@@ -55,6 +64,7 @@ a {
 }
 
 .wasm-webgl-menu {
+    z-index: max(10000, 2000);
     visibility: hidden;
 }
 
@@ -72,11 +82,15 @@ a {
     visibility: visible;
 }
 
+.flex-justify-between {
+    justify-content: space-between;
+}
+
 .flex-horizontal {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
 }
+
 .flex-vertical {
     display: flex;
     flex-direction: column;
@@ -91,7 +105,7 @@ a {
     padding-right: 20px;
 }
 
-.hidden{
+.navbar-hidden{
     height: 3px;
     .nav-links {
         visibility: collapse;
@@ -110,4 +124,58 @@ a {
 
 .width-100 {
     width: 100vw;
+}
+
+.sidebar-menu {
+    position: sticky !important;
+    min-width: 5vw;
+    height: 100%;
+}
+
+.sidebar-hidden {
+    width: 5vw;
+    .sidebar-menu {
+        visibility: collapse;
+    }
+    .sidebar-rendering {
+        visibility: collapse;
+        width: 0;
+    }
+    .sidebar-network {
+        visibility: collapse;
+        width: 0;
+    }
+    .sidebar-menu-network {
+        visibility: collapse;
+        width: 0;
+    }
+}
+
+.sidebar-menu-network {
+    width:auto;
+}
+
+.sidebar-collapse {
+    width: 20%;
+}
+
+.sidebar-network {
+    height: auto;
+}
+.sidebar-rendering {
+    height: auto;
+}
+
+.list-group {
+    list-style: none;
+}
+
+.list-group:hover{
+    .list-group-dropdown {
+        visibility: visible;
+    }
+}
+
+.list-group-dropdown {
+    visibility: hidden;
 }

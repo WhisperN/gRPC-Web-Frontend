@@ -71,3 +71,14 @@ Is still extremely slow
 # Approach 3: Direct import of parquet/arrow
 Extremely efficient and loads in seconds!
 
+*Installed WebGPU*
+
+```
+npm install --save-dev @webgpu/types
+```
+
+
+## Computations
+
+- Heatmap of data distribution
+- KL for distribution comparison

@@ -6,7 +6,7 @@
     <title>GRPC Performance frontend</title>
 </head>
 <body>
-<nav class="navbar navbar-menu flex-horizontal">
+<nav class="navbar navbar-menu flex-horizontal flex-justify-between">
     <div class="nav-links">
         <a class="pl-20" href="/public">Native</a>
         <a class="pl-20" href="/wasm">Wasm</a>
@@ -28,8 +28,53 @@
         <a id="navbar-down">&#9660;</a>
     </div>
 </nav>
-<section class="height-100 width-100">
+<section class="height-100 width-100 flex-horizontal">
     <div id="spinningGlobe" class="spinning-globe"></div>
+    <div id="spinningGlobeSidebar" class="sidebar-menu">
+        <div class="flex-horizontal flex-justify-between">
+            <a class="sidebar-menu-network">Settings</a>
+            <div onclick="expandMenu('sidebar')"
+            class="sidebar-collapse">
+                <a id="sidebar-down">&#9655;</a>
+                <a id="sidebar-up" hidden>&#9665;</a>
+            </div>
+        </div>
+        <form id="spinningGlobeSidebarFormat"
+              class="sidebar-rendering flex-vertical">
+            <h2>File Format</h2>
+            <label>
+                <input type="radio" name="format" value="parquet">parquet
+            </label>
+            <label>
+                <input type="radio" name="format" value="arrow" disabled>arrow
+            </label>
+            <label>
+                <input type="radio" name="format" value="arrow">raw (flight IPC)
+            </label>
+            <h2>Network Protocols</h2>
+            <label>
+                <input type="radio" name="protocol" value="h1">HTTP/1.1
+            </label>
+            <label>
+                <input type="radio" name="protocol" value="h2">HTTP/2
+            </label>
+            <label>
+                <input type="radio" name="protocol" value="gRPC">gRPC-Web (+Arrow IPC)
+            </label>
+            <!-- Add a button only for Network performance tests. -->
+            <h2>Calculation Engine</h2>
+            <label>
+                <input type="radio" name="engine" value="wasm">WASM
+            </label>
+            <label>
+                <input type="radio" name="engine" value="wasmWebGpu">WASM + WebGPU
+            </label>
+            <label>
+                <input type="radio" name="engine" value="ts">TypeScript (pure)
+            </label>
+            <button type="submit">Load</button>
+        </form>
+    </div>
 </section>
 </body>
 </html>

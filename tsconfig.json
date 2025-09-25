@@ -13,7 +13,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "types": ["@webgpu/types"]
   },
   "include": ["src"]
 }

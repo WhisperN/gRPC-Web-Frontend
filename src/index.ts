@@ -64,6 +64,7 @@ console.info("Query result called");
 
 console.table(result);*/
 /*
+
 console.info("Calling database");
 const result = await http_client.queryData(db, "sPlotPositions");
 console.table(result);*/
@@ -83,3 +84,4 @@ const container = document.getElementById("spinningGlobe") as HTMLDivElement;
 console.info(container.getAttribute("class"));
 startGlobeScatter({container, lat, lon})
 console.info("[GlobeScatter] Code done");
+

@@ -1,5 +1,5 @@
 import {AsyncDuckDB, AsyncDuckDBConnection} from "@duckdb/duckdb-wasm";
-import {toPlain} from "@/ts/ts-http/HTTP";
+import {toPlain} from "@/ts/ts-http/assets";
 import {Duck_db_instance} from "./Duck_db_instance";
 import {tableFromIPC} from "apache-arrow";
 
