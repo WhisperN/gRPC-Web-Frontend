@@ -6,42 +6,41 @@
     <title>GRPC Performance frontend</title>
 </head>
 <body>
-<nav class="navbar navbar-menu flex-horizontal flex-justify-between">
-    <div class="nav-links">
-        <a class="pl-20" href="/public">Native</a>
-        <a class="pl-20" href="/wasm">Wasm</a>
-        <div class="dropdown pl-20">
-            <a class="wasm-webgl"
-            >Wasm+WebGL
-                <a id="wasm-webgl-up" style="font-size: small; position: absolute;">&#9660;</a>
-                <a id="wasm-webgl-down" style="font-size: small; position: absolute;">&#9650;</a>
-            </a>
-            <div class="wasm-webgl-menu flex-vertical">
-                <a class="navbar-dropdown-element">2D</a>
-                <a class="navbar-dropdown-element">3D</a>
-                <a class="navbar-dropdown-element">Compute shaders</a>
+<nav class="navbar">
+    <div class="nav-links" role="navigation" aria-label="Primary">
+        <a href="/public" aria-current="page">Native</a>
+        <a href="/wasm">Wasm</a>
+
+        <div class="dropdown">
+            <button class="wasm-webgl" type="button"
+                    aria-expanded="false" aria-controls="menu-webgl">
+                Wasm+WebGL
+                <span class="chev" aria-hidden="true">▾</span>
+            </button>
+
+            <div id="menu-webgl" class="wasm-webgl-menu" role="menu" tabindex="-1">
+                <a class="navbar-dropdown-element" role="menuitem" href="/wasm/2d">2D</a>
+                <a class="navbar-dropdown-element" role="menuitem" href="/wasm/3d">3D</a>
+                <a class="navbar-dropdown-element" role="menuitem" href="/wasm/compute">Compute shaders</a>
             </div>
         </div>
     </div>
-    <div class="pr-20 navbar-collapse" onclick="expandMenu('navbar')">
-        <a id="navbar-up" hidden>&#9650;</a>
-        <a id="navbar-down">&#9660;</a>
-    </div>
 </nav>
+
 <section class="height-100 width-100 flex-horizontal">
     <div id="spinningGlobe" class="spinning-globe"></div>
     <div id="spinningGlobeSidebar" class="sidebar-menu">
         <div class="flex-horizontal flex-justify-between">
-            <a class="sidebar-menu-network">Settings</a>
             <div onclick="expandMenu('sidebar')"
-            class="sidebar-collapse">
-                <a id="sidebar-down">&#9655;</a>
-                <a id="sidebar-up" hidden>&#9665;</a>
+            class="sidebar-collapse"
+            style="font-size: 1.6em;">
+                <a id="sidebar-down">&CircleMinus;</a>
+                <a id="sidebar-up" hidden>&CirclePlus;</a>
             </div>
         </div>
         <form id="spinningGlobeSidebarFormat"
               class="sidebar-rendering flex-vertical">
-            <h2>File Format</h2>
+            <h3>File Format</h3>
             <label>
                 <input type="radio" name="format" value="parquet">parquet
             </label>
@@ -51,7 +50,7 @@
             <label>
                 <input type="radio" name="format" value="arrow">raw (flight IPC)
             </label>
-            <h2>Network Protocols</h2>
+            <h3>Network Protocols</h3>
             <label>
                 <input type="radio" name="protocol" value="h1">HTTP/1.1
             </label>
@@ -62,7 +61,7 @@
                 <input type="radio" name="protocol" value="gRPC">gRPC-Web (+Arrow IPC)
             </label>
             <!-- Add a button only for Network performance tests. -->
-            <h2>Calculation Engine</h2>
+            <h3>Calculation Engine</h3>
             <label>
                 <input type="radio" name="engine" value="wasm">WASM
             </label>

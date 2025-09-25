@@ -1,7 +1,7 @@
-export class Shader_Modules {
+export class Shader_Module {
     private device: GPUDevice;
     constructor(device: GPUDevice) {
-        this.device = device
+        this.device = device;
     }
     _first_shader() {
         const module = this.device.createShaderModule({

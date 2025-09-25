@@ -84,4 +84,3 @@ const container = document.getElementById("spinningGlobe") as HTMLDivElement;
 console.info(container.getAttribute("class"));
 startGlobeScatter({container, lat, lon})
 console.info("[GlobeScatter] Code done");
-
