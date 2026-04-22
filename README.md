@@ -16,7 +16,7 @@ library.
 
 **Prerequisites**
 - npm
-- (bazel) -> If you want to play around with yourself compiling
+- (bazel) -> If you want to play around compiling
 
 **Installation**
 ```bash
